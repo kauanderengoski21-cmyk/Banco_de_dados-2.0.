@@ -1,1 +1,32 @@
 create database "Kauan";
+
+create table tb_empresa (
+id_empresa serial primary key,
+tx_nome varchar (200),
+tx_cnpj varchar (200),
+tx_endereco varchar(250),
+tx_telefone varchar(20),
+dt_cadastro timestamp
+);
+
+create table tb_escolta (
+id_escolta serial primary key,
+cd_empresa numeric (18,0),
+tx_nome varchar (200),
+tx_cpf varchar (14),
+nr_idade numeric (18,0),
+tx_telefone varchar (20),
+tx_estado varchar(50),
+dt_cadastro timestamp
+);
+
+create table tb_missao (
+id_missao serial primary key,
+cd_escolta numeric (18,0),
+tx_origem varchar (200),
+tx_destino varchar (200),
+tx_saida timestamp,
+dt_chegada timestamp,
+tx_estado varchar (50)
+);
+
