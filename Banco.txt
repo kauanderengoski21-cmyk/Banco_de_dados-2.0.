@@ -8,7 +8,7 @@ tx_endereco varchar(250),
 tx_telefone varchar(20),
 dt_cadastro timestamp
 );
-
+=====================================
 create table tb_escolta (
 id_escolta serial primary key,
 cd_empresa numeric (18,0),
@@ -19,7 +19,7 @@ tx_telefone varchar (20),
 tx_estado varchar(50),
 dt_cadastro timestamp
 );
-
+=======================================
 create table tb_missao (
 id_missao serial primary key,
 cd_escolta numeric (18,0),
@@ -29,4 +29,60 @@ tx_saida timestamp,
 dt_chegada timestamp,
 tx_estado varchar (50)
 );
+========================================
+/// atividade realizada ///
+
+create table tb_empresa (
+id_empresa serial primary key,
+tx_nome varchar (200) not null,
+tx_cnpj varchar (200),
+tx_endereco varchar(250), 
+tx_telefone varchar(20) ,
+dt_cadastro timestamp default current_date
+);
+
+insert into  tb_empresa(tx_nome, tx_telefone, tx_cnpj, dt_cadastro, tx_endereco)
+values ('kauan', 4020, 'kalangod', '1945-07-18', 'routerpanama');
+
+===============================================
+
+create table tb_calculadora (
+id_calculadora serial primary key,
+nr_valor numeric (10,2),
+tx_operacao varchar (1)
+);
+
+insert into tb_calculadora (nr_valor, tx_operacao)
+values
+(10, '+'),
+(40, '+'),
+(49, '+'),
+(67, '+'),
+
+(90, '-'),
+(189, '-'),
+(120, '-'),
+(267, '-'),
+
+(666, '*'),
+(667, '*'),
+(626, '*'),
+(706, '*'),
+
+(669, '/'),
+(200, '/'),
+(989, '/'),
+(999, '/');
+
+select sum (nr_valor ) as valortotal from tb_calculadora
+where tx_operacao = '+'
+
+select sum (nr_valor ) from tb_calculadora
+where tx_operacao = '-',
+
+select sum (nr_valor ) from tb_calculadora
+where tx_operacao = '*',
+
+select sum (nr_valor ) from tb_calculadora
+where tx_operacao = '/';
 
