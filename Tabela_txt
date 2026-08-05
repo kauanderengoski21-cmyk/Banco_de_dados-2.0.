@@ -1,0 +1,43 @@
+create table tb_aluno (
+  id_aluno serial,
+  tx_nome varchar (255),
+  tx_email varchar (255),
+  nr_telefone numeric (18,0),
+
+  constraint pk_tb_aluno primary key (id_aluno)
+  
+);
+
+create table tb_professor (
+id_professor serial,
+tx_nome varchar (100),
+tx_email varchar (255),
+nr_telefone varchar (300),
+
+constraint pk_tb_professor primary key (id_professor)
+
+);
+
+create table tb_unidade_curricular(
+	id_unidade serial,
+	tx_nome varchar(100),
+
+	constraint pk_tb_unidade primary key (id_unidade)
+);
+
+
+
+create table tb_disciplina (
+id_diciplina  serial,
+tx_nome varchar (100),
+nr_carga_horaria integer,
+cd_professor integer,
+cd_unidade integer,
+
+constraint pk_tb_disciplina primary key (id_diciplina),
+
+constraint fk_professor FOREIGN  key (cd_professor) references tb_professor (id_professor),
+
+constraint fk_unidade FOREIGN  key (cd_unidade) references tb_unidade_curricular (id_unidade)
+
+);
