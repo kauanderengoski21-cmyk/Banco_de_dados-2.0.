@@ -41,3 +41,36 @@ constraint fk_professor FOREIGN  key (cd_professor) references tb_professor (id_
 constraint fk_unidade FOREIGN  key (cd_unidade) references tb_unidade_curricular (id_unidade)
 
 );
+
+==============================================
+create table tb_tipousuario(
+id_tipousuario serial,
+tx_descricao varchar (60),
+constraint fk_tb_tipousuario primary key (id_tipousuario)
+);
+insert into tb_tipousuario (tx_descricao)
+values ('adminstrador')
+
+create table tb_usuario(
+id_usuario serial,
+tx_nome varchar (60) not null,
+tx_email varchar(60) not null,
+tx_senha varchar (60) not null,
+cd_tipousuario integer,
+
+constraint fk_tb_usuario primary key (id_usuario),
+constraint fk_tb_usuario_cd_tipousuario foreign key (cd_tipousuario) references tb_tipousuario(id_tipousuario)=(10)
+);
+
+insert into tb_usuario insert into tb_usuario (tx_nome, tx_email, tx_senha, cd_tipousuario)
+values ('rudoismitchel', 'jackson')
+
+
+
+select 
+    * 
+from tb_usuario
+inner join tb_tipousuario on
+            tb_tipousuario.id_tipousuario =
+			 tb_usuario.cd_tipousuario
+
