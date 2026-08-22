@@ -1,0 +1,46 @@
+select tb_turma.id_turma   from tb_turma
+left join tb_matricula on tb_turma.id_turma =
+tb_matricula.id_turma 
+left join tb_nota on tb_matricula.id_matricula =
+tb_nota.id_matricula 
+where tb_nota.id_nota is null
+order by tb_turma.id_turma;
+
+select tb_aluno.id_aluno,
+tb_aluno.tx_nome,
+tb_aluno.tx_email,
+tb_aluno.dt_nascimento,
+tb_aluno.tx_cidade,
+from tb_aluno 
+left join tb_matricula 
+  on tb_aluno.id_aluno = tb_matricula.id_aluno 
+  where tb_matricula .id_matricula is null 
+  order by tb_aluno.tx_nome ;
+
+select tb_aluno.id_aluno,
+tb_aluno.tx_nome,
+tb_aluno.tx_email,
+tb_aluno.dt_nascimento,
+tb_aluno.tx_cidade
+from tb_aluno 
+where lower (tx_cidade) = lower ('chapeco');
+
+select tb_aluno.id_aluno
+ tb_aluno.tx_nome,
+ tb_nota.vl_nota
+ from tb_aluno 
+ inner join tb_matricula on tb_aluno.id_aluno =
+ tb_matricula.id_aluno
+ inner join tb_nota on tb_matricula.id_matricula =
+ tb_nota.id_matricula 
+ where tb_nota.vl_nota in (5,3,7,9);
+
+select tb_professor.id_professor,
+tb_professor.tx_nome,
+tb_curso.tx_nome,
+count(tb_matricula.id_matricula)
+from tb_professor inner join tb_curso 
+on tb_professor.id_professor = tb_curso.id_professor 
+inner join tb_matricula on tb_turma.id_turma = tb_matricula.id_turma 
+group by tb_professor.id_professor, tb_professor.tx_nome 
+order by tb_professor.tx_nome ;
