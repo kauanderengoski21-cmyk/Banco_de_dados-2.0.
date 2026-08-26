@@ -1,0 +1,83 @@
+select 
+tb_produto.tx_nome,
+tb_categoria.tx_nome,
+tb_produto.vl_preco,
+tb_produto.nr_estoque
+from tb_produto 
+inner join tb_categoria
+on tb_produto.cd_categoria =tb_categoria.id_categoria 
+where tb_produto.fl_ativo is true
+and tb_produto.vl_preco between 500 and 1000;
+
+
+select 
+tb_cliente.tx_nome,
+tb_cliente.tx_cpf,
+tb_cliente.tx_email
+from tb_cliente 
+where lower(tb_cliente.tx_estado) in (lower('sc'),lower('pr'))
+order by tb_cliente.tx_nome asc;
+
+
+select 
+tx_nome, nr_idade
+from tb_cliente 
+where tx_email is null 
+or nr_idade > 50;
+
+
+
+select 
+tb_produto.tx_nome as nomeProduto,
+tb_produto.vl_preco as preco,
+tb_fornecedor.tx_nome,
+tb_categoria.tx_descricao as decricaoProduto
+from tb_produto 
+inner join tb_fornecedor
+on tb_produto.cd_fornecedor = tb_fornecedor.id_fornecedor 
+inner join tb_categoria 
+on tb_produto.cd_categoria =
+tb_categoria.id_categoria 
+where tb_produto.fl_ativo = true
+order by tb_produto.vl_preco desc;
+
+select 
+tb_cliente.tx_nome,
+tb_cliente.tx_cidade,
+count(tb_venda.id_venda) as totalVenda
+from tb_cliente 
+left join tb_venda
+on tb_cliente.id_cliente =
+tb_venda.cd_cliente   
+group by 
+tb_cliente.tx_nome ,
+tb_cliente.tx_cidade 
+order by 
+totalVenda desc;
+
+
+select 
+tb_categoria.tx_nome
+from tb_categoria 
+left join tb_produto 
+on tb_categoria.id_categoria =
+tb_produto.cd_categoria 
+where tb_produto.id_produto is null
+order by tb_categoria.tx_nome  asc;
+
+select
+tb_cliente.tx_nome,
+sum(tb_item_venda.nr_quantidade *
+tb_item_venda.vl_unitario)
+from tb_cliente 
+left join tb_venda
+on tb_cliente.id_cliente =
+tb_venda.cd_cliente 
+inner join tb_item_venda
+on tb_venda.id_venda =
+tb_item_venda.cd_venda 
+group by tb_cliente.tx_nome 
+
+
+
+
