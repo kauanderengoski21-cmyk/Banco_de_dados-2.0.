@@ -42,12 +42,23 @@ tb_contato.cd_tipo_contato
 group by 
 tb_tipo_contato.tx_descricao;
 
+with vendamaior as (
 select
-tb_cliente.tx_nome,
-tb_venda.dt_venda
-from tb_cliente 
-join tb_venda 
-on tb_cliente.id_cliente =
-tb_venda.cd_cliente 
-where tb_venda.tx_status = 'pago'
+max(dt_venda) as maior,
+cd_cliente
+from
+tb_venda
+where upper(tx_status) = upper('PAGO')
+group by cd_cliente
+)
+select
+*
+from
+tb_venda
+inner join vendamaior
+on vendamaior.cd_cliente = tb_venda.cd_cliente
+and tb_venda.dt_venda >= vendamaior.maior
+
+
+
 
