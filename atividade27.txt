@@ -1,0 +1,53 @@
+select 
+tb_cliente.tx_nome,
+tb_contato.tx_contato
+from tb_cliente 
+left join tb_contato
+on tb_cliente.id_cliente =
+tb_contato.cd_cliente 
+and tb_contato.fl_principal = true 
+order by tb_cliente.tx_nome;
+
+
+select 
+tb_cliente.tx_nome,
+tb_avaliacao.tx_comentario,
+tb_produto.tx_descricao,
+tb_avaliacao.nr_nota
+from tb_avaliacao 
+join tb_cliente 
+on tb_avaliacao.cd_cliente =
+tb_cliente.id_cliente 
+join tb_produto
+on tb_avaliacao.cd_produto =
+tb_produto.id_produto 
+
+select 
+tb_cliente.tx_nome,
+tb_cliente.nr_idade
+from tb_cliente
+where tb_cliente.nr_idade > (
+select avg(tb_cliente.nr_idade)
+from tb_cliente);
+
+
+select 
+tb_tipo_contato.tx_descricao,
+count (tb_contato.cd_cliente)
+from tb_tipo_contato
+join  tb_contato 
+on
+tb_tipo_contato.id_tipo_contato =
+tb_contato.cd_tipo_contato 
+group by 
+tb_tipo_contato.tx_descricao;
+
+select
+tb_cliente.tx_nome,
+tb_venda.dt_venda
+from tb_cliente 
+join tb_venda 
+on tb_cliente.id_cliente =
+tb_venda.cd_cliente 
+where tb_venda.tx_status = 'pago'
+
