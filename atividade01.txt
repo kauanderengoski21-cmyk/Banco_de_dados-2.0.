@@ -58,10 +58,17 @@ from tb_cliente
 where UPPER( tb_cliente.tx_nome) like UPPER( 'a%')
 or UPPER( tb_cliente.tx_nome) like UPPER ( 'o%');
 
-
-select 
-tb_produto.tx_nome as tx_produto,
-tb_categoria.tx_nome as tx_categoria,
-tb_produto.nr_estoque as estoqueAtual,
-AVG(tb_produto.nr_estoque) as valorMedia
-AVG(tb_produto.nr_estoque) - tb_produto
+WITH media AS (
+    SELECT
+        cd_categoria,
+        AVG(nr_estoque) AS vl_media_categoria
+    FROM tb_produto
+    GROUP BY cd_categoria
+)
+SELECT *
+FROM tb_produto
+INNER JOIN media
+    ON tb_produto.cd_categoria = media.cd_categoria
+INNER JOIN tb_categoria
+    ON tb_produto.cd_categoria = tb_categoria.id_categoria
+WHERE tb_produto.nr_estoque < media.vl_media_categoria;
