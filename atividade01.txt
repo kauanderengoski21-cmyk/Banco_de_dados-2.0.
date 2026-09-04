@@ -72,3 +72,50 @@ INNER JOIN media
 INNER JOIN tb_categoria
     ON tb_produto.cd_categoria = tb_categoria.id_categoria
 WHERE tb_produto.nr_estoque < media.vl_media_categoria;
+===================================================================
+
+with vendas as (
+select
+count(distinct venda.id_venda) as nr_compras,
+max(venda.dt_venda ) as dt_ultimacompra,
+min(venda.dt_venda ) as dt_primeiracompra,
+sum(prod.nr_quantidade * prod.vl_unitario) as vl_totalgasto,
+venda.cd_cliente as cliente
+from tb_venda venda
+inner join tb_item_venda prod
+on prod.cd_venda = venda.id_venda
+where
+upper(venda.tx_status) = upper('pago')
+group by venda.cd_cliente
+)
+select
+cliente.tx_nome as nome,
+ende.tx_cidade as cidade,
+vendas.dt_primeiracompra,
+vendas.dt_ultimacompra,
+vendas.vl_totalgasto,
+vendas.nr_compras,
+case
+when vendas.nr_compras < 1 then 'CLIENTE PEQUENO'
+when vendas.nr_compras = 1 then 'CLIENTE MEDIO'
+when vendas.nr_compras = 2 then 'CLIENTE GRANDE'
+else 'OUTROS'
+end as status,
+(
+select
+p.tx_nome as produtoFavorito
+from
+tb_venda venda
+inner join tb_item_venda prod on
+prod.cd_venda = venda.id_venda
+inner join tb_produto p on p.id_produto = prod.cd_produto
+where
+upper(venda.tx_status) = upper('pago')
+and cliente.id_cliente = venda.cd_cliente
+group by p.tx_nome, p.id_produto
+order by sum(prod.nr_quantidade) desc
+limit 1
+) as produtoFavorito2
+from tb_cliente cliente
+inner join tb_endereco ende on ende.id_endereco = cliente.cd_endereco
+inner join vendas on vendas.cliente = cliente.id_cliente;
