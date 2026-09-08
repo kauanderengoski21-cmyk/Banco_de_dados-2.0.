@@ -119,3 +119,15 @@ limit 1
 from tb_cliente cliente
 inner join tb_endereco ende on ende.id_endereco = cliente.cd_endereco
 inner join vendas on vendas.cliente = cliente.id_cliente;
+
+===================================================================================
+alter table tb_produto add column 
+   tx_categoria varchar (255) not null;
+
+
+update tb_produto set tx_categoria = (
+ select tb_categoria
+ tb_cateogira.tx_nome 
+ where tb_produto.cd_categoria = tb_categoria.id_categoria
+);
+
