@@ -1,0 +1,42 @@
+update tb_produto 
+set vl_preco = 1234.56
+where  upper (tx_nome) =  upper('notebook');
+
+
+update tb_produto 
+set vl_preco =( vl_preco * 1.10 )
+where  upper (tx_nome) =  upper('Smartphone');
+
+update tb_produto 
+set nr_estoque = (nr_estoque -5)
+where  upper (tx_nome) =  upper('notebook');
+
+delete
+from
+	tb_pedido
+where
+	id_pedido = 9;
+
+delete
+from
+	tb_pedido
+where
+	nr_quantidade < 3
+	and dt_pedido < '2024-02-01';
+
+select tb_categoria.tx_nome,
+count(tb_produto.id_produto)
+from tb_categoria 
+inner join tb_produto
+on tb_categoria.id_categoria  =
+tb_produto.cd_categoria 
+where tb_produto.fl_ativo = true
+group by tb_categoria.tx_nome;
+
+select tb_categoria.tx_nome
+from tb_categoria
+inner join tb_produto 
+on tb_categoria.id_categoria =
+tb_produto.cd_categoria 
+group by tb_categoria.tx_nome 
+having count (tb_produto.id_produto) > 2;
