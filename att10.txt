@@ -40,3 +40,25 @@ on tb_categoria.id_categoria =
 tb_produto.cd_categoria 
 group by tb_categoria.tx_nome 
 having count (tb_produto.id_produto) > 2;
+
+create table tb_cliente (
+id_cliente serial primary key,
+tx_nome varchar (100),
+nr_idade integer check (nr_idade > 0),
+tx_uf varchar (2) check (tx_uf = UPPER(tx_uf))
+);
+
+insert into  tb_cliente (tx_nome, nr_idade, tx_uf)
+values
+('Caue', 17, 'SC'),
+('Ludimila', 20, 'SP'),
+('Thobias', 19, 'RS');
+
+
+alter table tb_pedido add column cd_cliente integer references tb_cliente (id_cliente);
+
+select * from tb_pedido
+
+update tb_pedido
+set cd_cliente = (2,9,5)
+where cd_produto  in id_pedido 
