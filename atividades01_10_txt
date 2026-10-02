@@ -47,7 +47,8 @@ from
 where
 	upper(tx_status) = upper('entregue')
 	and dt_pedido >= '2023-05-23';
-
+--0,002
+--0,001 50%. 
 
 create index
 idx_tb_enderecos_cd_usuario_fl_principa
