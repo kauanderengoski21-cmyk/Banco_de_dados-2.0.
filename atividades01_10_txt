@@ -1,0 +1,66 @@
+explain 
+select
+	id_pedido,
+	dt_pedido,
+	vl_total
+from
+	tb_pedidos
+where
+	cd_usuario = 1234;
+
+create index
+id_tb_pedidos_cd_usuario
+on
+tb_pedidos(cd_usuario);
+
+-- % =19,47/ 23,93 x 100 || %=81,32% ||antes era 23,93 e agora e 4,46 a melhoria e de 81,32% 
+
+
+select
+	tb_usuarios.tx_nome,
+	tb_pedidos.id_pedido,
+	tb_produtos.tx_nome,
+	tb_itens_pedido.vl_unitario
+from
+	tb_usuarios
+inner join tb_pedidos
+on
+	tb_usuarios.id_usuario =
+tb_pedidos.cd_usuario
+inner join tb_itens_pedido
+on
+	tb_pedidos.id_pedido =
+tb_itens_pedido.cd_pedido
+inner join tb_produtos
+on
+	tb_itens_pedido.cd_produto =
+tb_produtos.id_produto
+where
+	tb_usuarios.id_usuario = 1234;
+
+
+select
+	id_pedido,
+	vl_total
+from
+	tb_pedidos
+where
+	upper(tx_status) = upper('entregue')
+	and dt_pedido >= '2023-05-23';
+
+
+create index
+idx_tb_enderecos_cd_usuario_fl_principa
+on tb_enderecos (cd_usuario,fl_principal);
+
+select 
+tb_usuarios.tx_nome,
+tb_enderecos.tx_logradouro,
+tb_enderecos.nr_numero,
+tb_enderecos.tx_cidade
+from tb_usuarios 
+inner join tb_enderecos 
+on tb_usuarios.id_usuario =
+tb_enderecos.cd_usuario 
+where tb_enderecos.fl_principal = true;
+-- 0,012 - 0,009 = 0,003 diferença || (0,012 - 0,009) 0,012 x 100 = 25% || diferença 0.003 ||melhoria de 25%.
