@@ -65,3 +65,52 @@ on tb_usuarios.id_usuario =
 tb_enderecos.cd_usuario 
 where tb_enderecos.fl_principal = true;
 -- 0,012 - 0,009 = 0,003 diferença || (0,012 - 0,009) 0,012 x 100 = 25% || diferença 0.003 ||melhoria de 25%.
+
+=================================================================================================================
+--att dia 02/10/2026:
+
+create view vw_pedidos_usuarios as 
+SELECT
+    tb_pedidos.cd_usuario,
+    COUNT(DISTINCT tb_pedidos.id_pedido) AS quantidade_pedidos,
+    SUM(tb_itens_pedido.nr_quantidade) AS quantidade_total_itens,
+    SUM(
+        (tb_itens_pedido.nr_quantidade *  tb_itens_pedido.vl_unitario ) -  tb_itens_pedido.vl_desconto
+    ) AS valor_liquido_total
+FROM tb_pedidos
+INNER JOIN tb_itens_pedido
+    ON tb_pedidos.id_pedido = tb_itens_pedido.cd_pedido
+WHERE tb_pedidos.fl_pago is true
+  AND tb_pedidos.dt_pedido >= NOW() - INTERVAL '2 years'
+GROUP BY tb_pedidos.cd_usuario
+HAVING COUNT(DISTINCT tb_pedidos.id_pedido) >= 3;
+
+select * from vw_pedidos_usuarios; 
+
+create view cliente_destaques as
+SELECT
+    tb_usuarios.id_usuario,
+    tb_usuarios.tx_nome,
+    tb_enderecos.tx_uf,
+    vw_pedidos_usuarios.valor_liquido_total
+FROM vw_pedidos_usuarios
+INNER JOIN tb_usuarios
+    ON vw_pedidos_usuarios.cd_usuario = tb_usuarios.id_usuario
+INNER JOIN tb_enderecos
+    ON tb_usuarios.id_usuario = tb_enderecos.cd_usuario
+WHERE tb_usuarios.fl_ativo IS TRUE
+  AND tb_enderecos.fl_principal IS TRUE
+  AND vw_pedidos_usuarios.valor_liquido_total > (
+      SELECT AVG(valor_liquido_total)
+      FROM vw_pedidos_usuarios
+  )
+  AND EXISTS (
+      SELECT 1
+      FROM tb_pedidos
+      WHERE tb_pedidos.cd_usuario = tb_usuarios.id_usuario
+        AND upper(tx_status) = upper('cancelado')
+  )
+ORDER BY vw_pedidos_usuarios.valor_liquido_total DESC;
+
+
+select * from vw_cliente_destaques;
