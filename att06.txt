@@ -1,0 +1,42 @@
+
+create function fn_nome(valor numeric)
+returns varchar
+language plpgsql
+--- 2 comandos 2 linguagens o pg e o sql
+as $$ 
+begin
+--inicio
+    if(valor > 18 ) then 
+        return 'MAIOR DE IDADE';
+elsif (valor = 18) then
+    return 'EXATAMENTE 18 ANOS';
+else 
+        return 'MENOR DE IDADE';
+   end if;
+end;
+--- fim 
+$$;
+
+select *,
+fn_nome(id_atividade),
+fn_nome(18)from tb_atividade;
+
+
+select current_date,age(dt_nascimento),
+extract(year from age(dt_nascimento) )
+from tb_atividade ;
+
+
+create function 
+verificar_idade(dt_nascimento numeric)
+returns varchar as $$
+begin
+	if (extract (year from age (dt_nascimento))>18) then
+	return 'MAIOR DE IDADE';
+elsif (extract (year from age (dt_nascimento))=18) then
+return 'EXATAMENTE 18 ANOS';
+else 
+return 'MENOR DE IDADE';
+end if;
+end;
+$$ language plpgsql;
