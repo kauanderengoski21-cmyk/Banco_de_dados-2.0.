@@ -40,3 +40,206 @@ return 'MENOR DE IDADE';
 end if;
 end;
 $$ language plpgsql;
+
+create function calcular_desconto(valor numeric, porcentual_desconto numeric)
+returns numeric
+language plpgsql
+as $$
+begin
+	 return valor * (porcentual_desconto / 100);
+end;
+$$;
+
+select calcular_desconto(100, 10);
+
+drop function calcular_desconto;
+create function calculadora(valor1 numeric, valor2 numeric , operador integer)
+returns numeric
+language plpgsql
+as $$
+begin
+	if operador = 1 then
+	return valor1 + valor2;
+
+elsif operador = 2 then
+    return valor1 - valor2;
+
+elsif operador = 3 then
+    return valor1 * valor2;
+
+elsif operdaor = 4 then
+    return valor1 / valor2;
+end if;
+end;
+
+$$;
+
+select calculadora (10, 5, 1);
+select calculadora (10, 5, 2);
+select calculadora (10, 5, 3);
+select calculadora (10, 5, 4);
+
+create function classificar_preco(preco numeric)
+returns varchar
+language plpgsql
+as $$
+begin
+	 if preco < 50 then
+	 return 'BARATO';
+elsif preco < 200 then
+return 'medio';
+else
+return 'caro';
+end if;
+end;
+$$
+
+select classificar_preco(200);
+
+create function calcular_dobro(numero numeric)
+returns numeric
+language plpgsql as
+$$
+begin 
+	return numero * 2;
+end;
+$$;
+
+select calcular_dobro(5);
+
+create function verificar_par (valor integer)
+returns varchar
+language plpgsql
+as $$
+begin 
+	if valor % 2 = 0 then
+	return 'par';
+else
+return 'impar';
+end if;
+end;
+$$
+
+select verificar_par(2);
+---------------------------------------------------------------------------------------
+create function verificar_nota (nota numeric) 
+returns varchar
+language plpgsql                                            
+as $$
+begin
+	if nota>= 7 then
+	return 'aprovado';
+elsif nota >= 5 then
+return 'recuperacao';
+else
+return 'reprovado';
+end if;
+end;
+$$
+
+select verificar_nota(8)
+  
+
+create or replace function atividade_log_update()
+returns trigger
+language plpgsql
+as $$
+	begin
+	insert into tb_atividade_log
+	(tx_query, nr_idade, tx_mensagem, cd_atividade)
+	values(
+		current_query(),
+		extract (year from age(
+				old.dt_nascimento	
+				)),
+		'MENSAGEM VIA TRIGGER',
+		new.id_atividade
+	);
+	return new;
+	end;
+$$;
+
+create trigger nome 
+	before
+	update on tb_atividade
+for each row 
+execute function atividade_log_update();
+
+
+select * from tb_atividade_log  
+------------------------------------------------------
+
+create sequence seq_pagamento_log start 1 increment 1;
+
+create  TABLE tb_pagamentos_log (
+    id_pagamento_log NUMERIC(18,0)
+        DEFAULT nextval('seq_pagamento_log')
+        PRIMARY KEY,
+    tx_query VARCHAR(800),
+    tx_forma VARCHAR(100),
+    vl_antes NUMERIC,
+    vl_depois NUMERIC,
+    data_modificacao TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION registrar_pagamento()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.tx_forma := LOWER(NEW.tx_forma);
+
+    INSERT INTO tb_pagamentos_log
+    VALUES (
+        DEFAULT,
+        CURRENT_QUERY(),
+        NEW.tx_forma,
+        old.vl_pagamento,
+        NEW.vl_pagamento,
+        CURRENT_TIMESTAMP
+    );
+
+    RETURN NEW;
+END;
+$$;
+
+create trigger trigger_pagamentos
+before insert on tb_pagamentos
+for each row
+execute function
+registrar_pagamento();
+
+select * from tb_pagamentos_log;
+
+INSERT INTO public.tb_pagamentos
+(id_pagamento, cd_pedido, tx_forma, vl_pagamento, dt_pagamento)
+VALUES(nextval('sq_pagamento'), 102, 'BOLETO ooo o oo ', 9999990.000, '2026-01-26 16:11:18.042');
+
+create view vw_produto_mais_pedidos as
+select 
+ tb_produtos.id_produto,
+ tb_produtos.tx_descricao,
+ sum(tb_pedidos.vl_pago) as 
+ total_valor_pago,
+ max (tb_pedidos.data_pedidos) as 
+ maior_data_pedido,
+ max(tb_usuarios.id_usuario) as 
+ maior_codigo_usuario
+ from tb_pedidos
+ inner join tb_usuarios
+  on tb_pedidos.id_usuario =
+  tb_usuarios.id_usuario
+  inner join tb_produtos
+  on tb_pedidos.id_produto =
+  tb_pedidos.id_produto
+  where tb_pedidos.status = 'pago'
+  and tb_pedidos.fl_pago is true
+  and tb_usuarios.tx_uf = 'sc'
+  and tb_pedidos.vl_pago > 0
+  group by 
+  tb_produtos.id_produto,
+  tb_produtos.tx_descricao
+  order by total_valor_pago desc 
+  limit 50;
+
+create index idx_pedidos_status_pago on tb_pedidos (status.fl_pago);
