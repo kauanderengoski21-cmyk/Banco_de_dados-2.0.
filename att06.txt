@@ -215,31 +215,34 @@ INSERT INTO public.tb_pagamentos
 (id_pagamento, cd_pedido, tx_forma, vl_pagamento, dt_pagamento)
 VALUES(nextval('sq_pagamento'), 102, 'BOLETO ooo o oo ', 9999990.000, '2026-01-26 16:11:18.042');
 
-create view vw_produto_mais_pedidos as
-select 
- tb_produtos.id_produto,
- tb_produtos.tx_descricao,
- sum(tb_pedidos.vl_pago) as 
- total_valor_pago,
- max (tb_pedidos.data_pedidos) as 
- maior_data_pedido,
- max(tb_usuarios.id_usuario) as 
- maior_codigo_usuario
- from tb_pedidos
- inner join tb_usuarios
-  on tb_pedidos.id_usuario =
-  tb_usuarios.id_usuario
-  inner join tb_produtos
-  on tb_pedidos.id_produto =
-  tb_pedidos.id_produto
-  where tb_pedidos.status = 'pago'
-  and tb_pedidos.fl_pago is true
-  and tb_usuarios.tx_uf = 'sc'
-  and tb_pedidos.vl_pago > 0
-  group by 
-  tb_produtos.id_produto,
-  tb_produtos.tx_descricao
-  order by total_valor_pago desc 
-  limit 50;
+create or replace view public.vw_produto_mais_pedidos as
+select
+    pr.id_produto,
+    pr.tx_descricao,
+    sum(p.vl_total) as total_valor_pago,
+    max(p.dt_pedido) as maior_data_pedido,
+    max(u.id_usuario) as maior_codigo_usuario
+from
+    tb_pedidos p
+inner join tb_usuarios u
+    on p.cd_usuario = u.id_usuario
+inner join tb_itens_pedido ip
+    on p.id_pedido = ip.cd_pedido
+inner join tb_produtos pr
+    on ip.cd_produto = pr.id_produto
+inner join tb_enderecos e
+    on u.id_usuario = e.cd_usuario
+where
+    lower(p.tx_status) = 'pago'
+    and p.fl_pago is true
+    and lower(e.tx_uf) = 'sc'
+    and p.vl_total > 0
+group by
+    pr.id_produto,
+    pr.tx_descricao
+order by
+    total_valor_pago desc
+limit 50;
 
-create index idx_pedidos_status_pago on tb_pedidos (status.fl_pago);
+create index idx_pedidos_status_pago
+on public.tb_pedidos (tx_status, fl_pago);
