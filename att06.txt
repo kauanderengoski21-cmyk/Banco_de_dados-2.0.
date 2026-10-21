@@ -214,7 +214,7 @@ select * from tb_pagamentos_log;
 INSERT INTO public.tb_pagamentos
 (id_pagamento, cd_pedido, tx_forma, vl_pagamento, dt_pagamento)
 VALUES(nextval('sq_pagamento'), 102, 'BOLETO ooo o oo ', 9999990.000, '2026-01-26 16:11:18.042');
-
+-----------------------------------------------------------------------------------------------------
 create or replace view public.vw_produto_mais_pedidos as
 select
     pr.id_produto,
@@ -246,3 +246,22 @@ limit 50;
 
 create index idx_pedidos_status_pago
 on public.tb_pedidos (tx_status, fl_pago);
+-----------------------------------------------------------------
+CREATE OR REPLACE FUNCTION estado_extenso(tx_estado VARCHAR)
+RETURNS VARCHAR
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN CASE UPPER(tx_estado)
+        WHEN 'SC' THEN 'SANTA CATARINA'
+        WHEN 'RS' THEN 'RIO GRANDE DO SUL'
+        WHEN 'PR' THEN 'PARANA'
+        WHEN 'SP' THEN 'SAO PAULO'
+        WHEN 'RJ' THEN 'RIO DE JANEIRO'
+        WHEN 'MG' THEN 'MINAS GERAIS'
+        ELSE 'ESTADO INVALIDO'
+    END;
+END;
+$$;
+
+select estado_extenso('SC');
