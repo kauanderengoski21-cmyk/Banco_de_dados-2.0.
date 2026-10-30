@@ -1,0 +1,21 @@
+--1
+select tx_nome from tb_clientes 
+where fl_ativo is true
+order by tx_nome desc;
+
+--2
+select tx_mes,
+sum(vl_cobranca) as total_cobrado
+from tb_cobrancas
+group by tx_mes 
+order by tx_mes asc;
+
+--3
+select cd_cliente,
+sum(vl_cobranca) as total_cobrado,
+rank() over( order by
+sum(vl_cobranca) desc ) as  ranking
+from tb_cobrancas 
+where tx_mes ='2026-10'
+group by cd_cliente 
+order by ranking;
