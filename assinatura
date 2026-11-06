@@ -1,0 +1,36 @@
+--Atividade valendo algum premio
+select
+	cl.tx_nome as tx_cliente,
+	pl.tx_nome as tx_plano,
+	count(co.id_cobranca) as nr_cobrancas,
+	max(co.vl_cobranca) as vl_maior_cobranca,
+	sum(co.vl_cobranca) as vl_cobrado,
+	sum (case
+		when pg.id_pagamento is not null
+then co.vl_cobranca
+		else 0
+	end) as vl_pago,
+	SUM (case
+		when pg.id_pagamento is null 
+then co.vl_cobranca
+		else 0
+	end ) vl_em_aberto,
+	min(pg.dt_pagamento) as dt_primeiro_pagamento,
+	max(pg.dt_pagamento) as dt_ultimo_pagamento
+from
+	tb_clientes cl
+inner join tb_cobrancas co
+on
+	co.cd_cliente = cl.id_cliente
+left join tb_pagamentos pg
+on
+	pg.cd_cobranca = co.id_cobranca
+inner join tb_planos pl
+on
+	cl.cd_plano  = pl.id_plano
+group by
+	cl.tx_nome,
+	pl.tx_nome
+order by
+	vl_em_aberto desc,
+	cl.tx_nome asc;
